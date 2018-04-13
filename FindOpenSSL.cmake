@@ -1,10 +1,3 @@
-cmake_minimum_required(VERSION 2.8.11)
-project(cmake_wrapper)
-
-message("Conan CMake Wrapper")
-include(conanbuildinfo.cmake)
-conan_basic_setup()
-
 find_path(OPENSSL_INCLUDE_DIR NAMES ssl.h PATHS ${CONAN_INCLUDE_DIRS_OPENSSL} NO_CMAKE_FIND_ROOT_PATH)
 find_library(OPENSSL_LIBRARY NAMES ${CONAN_LIBS_OPENSSL} PATHS ${CONAN_LIB_DIRS_OPENSSL} NO_CMAKE_FIND_ROOT_PATH)
 
@@ -17,5 +10,3 @@ set(OPENSSL_INCLUDE_DIRS ${OPENSSL_INCLUDE_DIR})
 set(OPENSSL_LIBRARIES ${OPENSSL_LIBRARY})
 
 mark_as_advanced(OPENSSL_LIBRARY OPENSSL_INCLUDE_DIR)
-
-add_subdirectory("source_subfolder")

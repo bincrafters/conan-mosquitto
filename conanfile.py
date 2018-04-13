@@ -5,57 +5,64 @@ from conans import ConanFile, CMake, tools
 import os
 
 
-class LibnameConan(ConanFile):
-    name = "libname"
-    version = "0.0.0"
+class MosquittoConan(ConanFile):
+    name = "mosquitto"
+    version = "1.4.15"
     description = "Keep it short"
     url = "https://github.com/bincrafters/conan-libname"
-    homepage = "https://github.com/original_author/original_lib"
-
-    # Indicates License type of the packaged library
-    license = "MIT"
-
-    # Packages the license for the conanfile.py
+    homepage = "https://mosquitto.org/"
+    author = "Bincrafters <bincrafters@gmail.com>"
+    license = "EPL", "EDL"
     exports = ["LICENSE.md"]
-
-    # Remove following lines if the target lib does not use cmake.
-    exports_sources = ["CMakeLists.txt"]
+    exports_sources = ["CMakeLists.txt", "mosquitto.patch", "FindOpenSSL.cmake"]
     generators = "cmake"
-
-    # Options may need to change depending on the packaged library.
     settings = "os", "arch", "compiler", "build_type"
-    options = {"shared": [True, False], "fPIC": [True, False]}
-    default_options = "shared=False", "fPIC=True"
-
-    # Custom attributes for Bincrafters recipe conventions
+    options = {"shared": [True, False], "fPIC": [True, False], "with_tls": [True, False], "with_srv": [True, False]}
+    default_options = "shared=False", "fPIC=True", "with_tls=True", "with_srv=True"
     source_subfolder = "source_subfolder"
     build_subfolder = "build_subfolder"
-
-    # Use version ranges for dependencies unless there's a reason not to
-    # Update 2/9/18 - Per conan team, ranges are slow to resolve.
-    # So, with libs like zlib, updates are very rare, so we now use static version
-
-
-    requires = (
-        "OpenSSL/[>=1.0.2l]@conan/stable",
-        "zlib/1.2.11@conan/stable"
-    )
+    # TODO (uilian): Add options with_websockets and with_uuid (uuid if not apple)
 
     def config_options(self):
         if self.settings.os == 'Windows':
             del self.options.fPIC
 
+    def configure(self):
+        del self.settings.compiler.libcxx
+
+    def requirements(self):
+        if self.options.with_tls:
+            self.requires.add("OpenSSL/1.0.2o@conan/stable")
+        if self.options.with_srv:
+            self.requires.add("c-ares/1.14.0@conan/stable")
+
     def source(self):
-        source_url = "https://github.com/libauthor/libname"
+        source_url = "https://github.com/eclipse/mosquitto"
         tools.get("{0}/archive/v{1}.tar.gz".format(source_url, self.version))
         extracted_dir = self.name + "-" + self.version
-
-        #Rename to "source_subfolder" is a convention to simplify later steps
         os.rename(extracted_dir, self.source_subfolder)
+        tools.patch(patch_file="mosquitto.patch", base_path=self.source_subfolder)
+
+    def patch_cmakefile(self):
+        # do not install manual
+        cmake_file = os.path.join(self.source_subfolder, "CMakeLists.txt")
+        tools.replace_in_file(cmake_file, "add_subdirectory(man)", "")
+        # do not install example
+        install = 'install(FILES mosquitto.conf aclfile.example pskfile.example pwfile.example DESTINATION "${SYSCONFDIR}")'
+        tools.replace_in_file(cmake_file, install, "")
+        # enable to build static
+        cmake_lib_file = os.path.join(self.source_subfolder, "lib", "CMakeLists.txt")
+        shared_lib_old = 'add_library(libmosquitto SHARED'
+        shared_lib_new = 'add_library(libmosquitto'
+        tools.replace_in_file(cmake_lib_file, shared_lib_old, shared_lib_new)
+        # enable to install to static
+        install_lib_old = 'LIBRARY DESTINATION'
+        install_lib_new = 'ARCHIVE DESTINATION "${LIBDIR}" LIBRARY DESTINATION'
+        tools.replace_in_file(cmake_lib_file, install_lib_old, install_lib_new)
 
     def configure_cmake(self):
-        cmake = CMake(self)
-        cmake.definitions["BUILD_TESTS"] = False # example
+        cmake = CMake(self, parallel=False)
+        cmake.verbose = True
         if self.settings.os != 'Windows':
             cmake.definitions['CMAKE_POSITION_INDEPENDENT_CODE'] = self.options.fPIC
         cmake.configure(build_folder=self.build_subfolder)
@@ -66,18 +73,17 @@ class LibnameConan(ConanFile):
         cmake.build()
 
     def package(self):
-        self.copy(pattern="LICENSE", dst="license", src=self.source_subfolder)
+        self.copy(pattern="LICENSE.txt", dst="licenses", src=self.source_subfolder)
+        self.copy(pattern="edl-v10", dst="licenses", src=self.source_subfolder)
+        self.copy(pattern="epl-v10", dst="licenses", src=self.source_subfolder)
         cmake = self.configure_cmake()
         cmake.install()
-        # If the CMakeLists.txt has a proper install method, the steps below may be redundant
-        # If so, you can just remove the lines below
-        include_folder = os.path.join(self.source_subfolder, "include")
-        self.copy(pattern="*", dst="include", src=include_folder)
-        self.copy(pattern="*.dll", dst="bin", keep_path=False)
-        self.copy(pattern="*.lib", dst="lib", keep_path=False)
-        self.copy(pattern="*.a", dst="lib", keep_path=False)
-        self.copy(pattern="*.so*", dst="lib", keep_path=False)
-        self.copy(pattern="*.dylib", dst="lib", keep_path=False)
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
+        if self.settings.os == "Windows":
+            self.cpp_info.libs.append("ws2_32")
+        elif self.settings.os == "Linux":
+            self.cpp_info.libs.extend([ "m", "rt", "pthread", "dl"])
+        elif self.settings.os == "Macos":
+            self.cpp_info.libs.extend(["dl", "m"])

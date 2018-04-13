@@ -2,7 +2,7 @@
 
 | Bintray | Windows | Linux & macOS |
 |:--------:|:---------:|:-----------------:|
-|BINTRAY_BADGE_URL|APPVEYOR_BADGE_URL|TRAVIS_BADGE_URL|
+|[![Download](https://api.bintray.com/packages/bincrafters/public-conan/mosquitto%3Abincrafters/images/download.svg)](https://bintray.com/bincrafters/public-conan/mosquitto%3Abincrafters/_latestVersion)|[![Build status](https://ci.appveyor.com/api/projects/status/github/bincrafters/conan-mosquitto?svg=true)](https://ci.appveyor.com/project/BinCrafters/conan-mosquitto)|[![Build Status](https://travis-ci.org/bincrafters/conan-mosquitto.svg?)](https://travis-ci.org/bincrafters/conan-mosquitto)|
 
 ## Conan.io Information
 

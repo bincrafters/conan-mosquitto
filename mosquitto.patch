@@ -1,0 +1,37 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 3a68061..6194840 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -86,10 +86,8 @@ option(WITH_SRV "Include SRV lookup support?" ON)
+ add_subdirectory(lib)
+ add_subdirectory(client)
+ add_subdirectory(src)
+-add_subdirectory(man)
+ 
+ # ========================================
+ # Install config file
+ # ========================================
+ 
+-install(FILES mosquitto.conf aclfile.example pskfile.example pwfile.example DESTINATION "${SYSCONFDIR}")
+diff --git a/lib/CMakeLists.txt b/lib/CMakeLists.txt
+index 07be5d9..e833883 100644
+--- a/lib/CMakeLists.txt
++++ b/lib/CMakeLists.txt
+@@ -25,7 +25,7 @@ include_directories(${mosquitto_SOURCE_DIR} ${mosquitto_SOURCE_DIR}/lib
+ 			${OPENSSL_INCLUDE_DIR} ${PTHREAD_INCLUDE_DIR})
+ link_directories(${mosquitto_SOURCE_DIR}/lib)
+ 
+-add_library(libmosquitto SHARED
++add_library(libmosquitto
+ 	logging_mosq.c logging_mosq.h
+ 	memory_mosq.c memory_mosq.h
+ 	messages_mosq.c messages_mosq.h
+@@ -78,7 +78,7 @@ set_target_properties(libmosquitto PROPERTIES
+ 	SOVERSION 1
+ )
+ 
+-install(TARGETS libmosquitto RUNTIME DESTINATION "${BINDIR}" LIBRARY DESTINATION "${LIBDIR}")
++install(TARGETS libmosquitto RUNTIME DESTINATION "${BINDIR}" ARCHIVE DESTINATION "${LIBDIR}" LIBRARY DESTINATION "${LIBDIR}")
+ install(FILES mosquitto.h DESTINATION "${INCLUDEDIR}")
+ 
+ if (UNIX)
