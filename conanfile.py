@@ -25,13 +25,12 @@ class MosquittoConan(ConanFile):
     def config_options(self):
         if self.settings.os == 'Windows':
             del self.options.fPIC
+            del self.options.shared
         if self.settings.os == "Macos":
             del self.options.with_uuid
 
     def configure(self):
         del self.settings.compiler.libcxx
-	if self.settings.os == "Windows":
-            self.options.shared = True
 
     def requirements(self):
         if self.options.with_tls:
@@ -56,9 +55,11 @@ class MosquittoConan(ConanFile):
         cmake.definitions["WITH_WEBSOCKETS"] = self.options.with_websockets
         if self.settings.os != "Macos":
             cmake.definitions["WITH_UUID"] = self.options.with_uuid
-        if self.settings.os != 'Windows':
+        if self.settings.os != "Windows":
             cmake.definitions['CMAKE_POSITION_INDEPENDENT_CODE'] = self.options.fPIC
-        cmake.definitions["WITH_THREADING"] = self.settings.os != 'Windows'
+        if self.settings.os == "Windows":
+            cmake.definitions["WITH_THREADING"] = False
+            cmake.definitions["BUILD_SHARED_LIBS"] = True
         cmake.configure(build_folder=self.build_subfolder)
         return cmake
 
