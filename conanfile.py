@@ -30,6 +30,8 @@ class MosquittoConan(ConanFile):
 
     def configure(self):
         del self.settings.compiler.libcxx
+	if self.settings.os == "Windows":
+            self.options.shared = True
 
     def requirements(self):
         if self.options.with_tls:
