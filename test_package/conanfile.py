@@ -4,6 +4,7 @@
 
 from conans import ConanFile, CMake, tools, RunEnvironment
 import os
+import subprocess
 
 
 class TestPackageConan(ConanFile):
@@ -17,6 +18,7 @@ class TestPackageConan(ConanFile):
 
     def test(self):
         with tools.environment_append(RunEnvironment(self).vars):
+            process = subprocess.Popen(["mosquitto"])
             bin_path = os.path.join("bin", "test_package")
             if self.settings.os == "Windows":
                 self.run(bin_path)
@@ -24,3 +26,4 @@ class TestPackageConan(ConanFile):
                 self.run("DYLD_LIBRARY_PATH=%s %s" % (os.environ.get('DYLD_LIBRARY_PATH', ''), bin_path))
             else:
                 self.run("LD_LIBRARY_PATH=%s %s" % (os.environ.get('LD_LIBRARY_PATH', ''), bin_path))
+            process.kill()
