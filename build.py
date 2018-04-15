@@ -8,6 +8,6 @@ import os
 
 if __name__ == "__main__":
 
-    shared_option_name = None if os.name == 'nt' else False
+    shared_option_name = False if os.name == 'nt' else None
     builder = build_template_default.get_builder(shared_option_name=shared_option_name)
     builder.run()
