@@ -8,7 +8,6 @@ import os
 
 if __name__ == "__main__":
 
-    builder = build_template_default.get_builder()
-    if os.name == 'nt':
-        builder.items = filter(lambda build: build.options["mosquitto:shared"] == True, builder.items)
+    shared_option_name = None if os.name == 'nt' else False
+    builder = build_template_default.get_builder(shared_option_name=shared_option_name)
     builder.run()
