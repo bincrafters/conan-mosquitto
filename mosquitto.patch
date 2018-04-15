@@ -1,7 +1,20 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 3a68061..0ea9ef9 100644
+index 3a68061..884adce 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
+@@ -24,10 +24,10 @@ endif (WIN32)
+ add_definitions (-DCMAKE -DVERSION=\"${VERSION}\" -DTIMESTAMP=\"${TIMESTAMP}\")
+ 
+ if (WIN32)
+-	set (BINDIR .)
++	set (BINDIR bin)
+ 	set (SBINDIR .)
+ 	set (SYSCONFDIR .)
+-	set (LIBDIR .)
++	set (LIBDIR lib)
+ 	set (INCLUDEDIR include)
+ 	set (DATAROOTDIR share)
+ 	set (MANDIR man)
 @@ -42,7 +42,7 @@ else (WIN32)
  	else ("${CMAKE_INSTALL_PREFIX}" STREQUAL /usr)
  		set (SYSCONFDIR etc/mosquitto)
