@@ -56,6 +56,7 @@ class MosquittoConan(ConanFile):
             cmake.definitions["WITH_UUID"] = self.options.with_uuid
         if self.settings.os != 'Windows':
             cmake.definitions['CMAKE_POSITION_INDEPENDENT_CODE'] = self.options.fPIC
+        cmake.definitions["WITH_THREADING"] = self.settings.os != 'Windows'
         cmake.configure(build_folder=self.build_subfolder)
         return cmake
 
