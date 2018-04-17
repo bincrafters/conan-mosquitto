@@ -17,8 +17,18 @@ class MosquittoConan(ConanFile):
     exports_sources = ["CMakeLists.txt", "mosquitto.patch"]
     generators = "cmake"
     settings = "os", "arch", "compiler", "build_type"
-    options = {"shared": [True, False], "fPIC": [True, False], "with_tls": [True, False], "with_websockets": [True, False], "with_uuid": [True, False]}
-    default_options = "shared=False", "fPIC=True", "with_tls=True", "with_websockets=False", "with_uuid=False"
+    options = {
+        "shared": [True, False],
+        "fPIC": [True, False],
+        "with_tls": [True, False],
+        "with_websockets": [True, False],
+        "with_uuid": [True, False],
+        "with_mosquittopp": [True, False],
+        "with_srv": [True, False]
+    }
+    default_options = ("shared=False", "fPIC=True", "with_tls=True",
+                       "with_websockets=False", "with_uuid=False",
+                       "with_mosquittopp=True", "with_srv=True")
     source_subfolder = "source_subfolder"
     build_subfolder = "build_subfolder"
 
@@ -30,7 +40,8 @@ class MosquittoConan(ConanFile):
             del self.options.with_uuid
 
     def configure(self):
-        del self.settings.compiler.libcxx
+        if not self.options.with_mosquittopp:
+            del self.settings.compiler.libcxx
 
     def requirements(self):
         if self.options.with_tls:
@@ -40,19 +51,22 @@ class MosquittoConan(ConanFile):
         if self.settings.os != "Macos":
             if self.options.with_uuid:
                 self.requires.add("libuuid/1.0.3@bincrafters/stable")
+        if self.options.with_srv:
+            self.requires.add("c-ares/1.14.0@conan/stable")
 
     def source(self):
         source_url = "https://github.com/eclipse/mosquitto"
         tools.get("{0}/archive/v{1}.tar.gz".format(source_url, self.version))
         extracted_dir = self.name + "-" + self.version
         os.rename(extracted_dir, self.source_subfolder)
-        tools.patch(patch_file="mosquitto.patch", base_path=self.source_subfolder)
+        tools.patch(
+            patch_file="mosquitto.patch", base_path=self.source_subfolder)
 
     def configure_cmake(self):
         cmake = CMake(self)
-        # TODO (uilian) waiting for c-ares/1.14.0@conan/stable
-        cmake.definitions["WITH_SRV"] = False
+        cmake.definitions["WITH_SRV"] = self.options.with_srv
         cmake.definitions["WITH_WEBSOCKETS"] = self.options.with_websockets
+        cmake.definitions["WITH_MOSQUITTOPP"] = self.options.with_mosquittopp
         if self.settings.os != "Macos":
             cmake.definitions["WITH_UUID"] = self.options.with_uuid
         if self.settings.os != "Windows":
