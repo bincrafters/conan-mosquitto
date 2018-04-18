@@ -8,8 +8,8 @@ import os
 class MosquittoConan(ConanFile):
     name = "mosquitto"
     version = "1.4.15"
-    description = "Keep it short"
-    url = "https://github.com/bincrafters/conan-libname"
+    description = "Open source message broker that implements the MQTT protocol"
+    url = "https://github.com/bincrafters/conan-mosquitto"
     homepage = "https://mosquitto.org/"
     author = "Bincrafters <bincrafters@gmail.com>"
     license = "EPL", "EDL"
@@ -21,13 +21,10 @@ class MosquittoConan(ConanFile):
         "shared": [True, False],
         "fPIC": [True, False],
         "with_tls": [True, False],
-        "with_websockets": [True, False],
-        "with_uuid": [True, False],
         "with_mosquittopp": [True, False],
         "with_srv": [True, False]
     }
     default_options = ("shared=False", "fPIC=True", "with_tls=True",
-                       "with_websockets=False", "with_uuid=False",
                        "with_mosquittopp=True", "with_srv=True")
     source_subfolder = "source_subfolder"
     build_subfolder = "build_subfolder"
@@ -46,11 +43,6 @@ class MosquittoConan(ConanFile):
     def requirements(self):
         if self.options.with_tls:
             self.requires.add("OpenSSL/1.0.2o@conan/stable")
-        if self.options.with_websockets:
-            self.requires.add("libwebsockets/2.4.0@bincrafters/stable")
-        if self.settings.os != "Macos":
-            if self.options.with_uuid:
-                self.requires.add("libuuid/1.0.3@bincrafters/stable")
         if self.options.with_srv:
             self.requires.add("c-ares/1.14.0@conan/stable")
 
@@ -65,10 +57,7 @@ class MosquittoConan(ConanFile):
     def configure_cmake(self):
         cmake = CMake(self)
         cmake.definitions["WITH_SRV"] = self.options.with_srv
-        cmake.definitions["WITH_WEBSOCKETS"] = self.options.with_websockets
         cmake.definitions["WITH_MOSQUITTOPP"] = self.options.with_mosquittopp
-        if self.settings.os != "Macos":
-            cmake.definitions["WITH_UUID"] = self.options.with_uuid
         if self.settings.os != "Windows":
             cmake.definitions['CMAKE_POSITION_INDEPENDENT_CODE'] = self.options.fPIC
         if self.settings.os == "Windows":
