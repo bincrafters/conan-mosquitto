@@ -32,7 +32,6 @@ class MosquittoConan(ConanFile):
     def config_options(self):
         if self.settings.os == 'Windows':
             del self.options.fPIC
-            del self.options.shared
         if self.settings.os == "Macos":
             del self.options.with_uuid
 
@@ -62,7 +61,6 @@ class MosquittoConan(ConanFile):
             cmake.definitions['CMAKE_POSITION_INDEPENDENT_CODE'] = self.options.fPIC
         if self.settings.os == "Windows":
             cmake.definitions["WITH_THREADING"] = False
-            cmake.definitions["BUILD_SHARED_LIBS"] = True
         cmake.configure(build_folder=self.build_subfolder)
         return cmake
 

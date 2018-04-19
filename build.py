@@ -13,8 +13,7 @@ def is_linux():
     return platform.system() == 'Linux'
 
 if __name__ == "__main__":
-    shared_option_name = False if is_windows() else None
-    builder = build_template_default.get_builder(shared_option_name=shared_option_name)
+    builder = build_template_default.get_builder()
     if is_linux():
         extended_builds = copy.deepcopy(builder)
         for settings, options, env_vars, build_requires, _ in extended_builds.items:
