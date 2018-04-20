@@ -22,10 +22,12 @@ class MosquittoConan(ConanFile):
         "fPIC": [True, False],
         "with_tls": [True, False],
         "with_mosquittopp": [True, False],
-        "with_srv": [True, False]
+        "with_srv": [True, False],
+        "with_binaries": [True, False]
     }
     default_options = ("shared=False", "fPIC=True", "with_tls=True",
-                       "with_mosquittopp=True", "with_srv=True")
+                       "with_mosquittopp=True", "with_srv=True",
+                       "with_binaries=True")
     source_subfolder = "source_subfolder"
     build_subfolder = "build_subfolder"
 
@@ -56,6 +58,7 @@ class MosquittoConan(ConanFile):
     def configure_cmake(self):
         cmake = CMake(self)
         cmake.definitions["WITH_SRV"] = self.options.with_srv
+        cmake.definitions["WITH_BINARIES"] = self.options.with_binaries
         cmake.definitions["WITH_MOSQUITTOPP"] = self.options.with_mosquittopp
         if self.settings.os != "Windows":
             cmake.definitions['CMAKE_POSITION_INDEPENDENT_CODE'] = self.options.fPIC
