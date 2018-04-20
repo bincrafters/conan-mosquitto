@@ -62,8 +62,9 @@ class MosquittoConan(ConanFile):
         cmake.definitions["WITH_MOSQUITTOPP"] = self.options.with_mosquittopp
         if self.settings.os != "Windows":
             cmake.definitions['CMAKE_POSITION_INDEPENDENT_CODE'] = self.options.fPIC
-        if self.settings.os == "Windows":
+        else:
             cmake.definitions["WITH_THREADING"] = False
+            cmake.definitions["MSVC_STATIC_RUNTIME"] = "MT" in self.settings.compiler.runtime
         cmake.configure(build_folder=self.build_subfolder)
         return cmake
 

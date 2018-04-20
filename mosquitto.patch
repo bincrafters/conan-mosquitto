@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 3a68061..52adea0 100644
+index 3a68061..98626ec 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -24,10 +24,10 @@ endif (WIN32)
+@@ -24,16 +24,34 @@ endif (WIN32)
  add_definitions (-DCMAKE -DVERSION=\"${VERSION}\" -DTIMESTAMP=\"${TIMESTAMP}\")
  
  if (WIN32)
@@ -15,7 +15,31 @@ index 3a68061..52adea0 100644
  	set (INCLUDEDIR include)
  	set (DATAROOTDIR share)
  	set (MANDIR man)
-@@ -42,7 +42,7 @@ else (WIN32)
+ 	set (SHAREDEST .)
+ 	add_definitions("-D_CRT_SECURE_NO_WARNINGS")
+ 	add_definitions("-D_CRT_NONSTDC_NO_DEPRECATE")
++
++	if (MSVC)
++		option (STATIC_RUNTIME "Link against the static runtime library" OFF)
++		if (MSVC_STATIC_RUNTIME)
++			foreach (config_type ${CMAKE_CONFIGURATION_TYPES} ${CMAKE_BUILD_TYPE})
++				string (TOUPPER ${config_type} upper_config_type)
++				SET (flag_var "CMAKE_C_FLAGS_${upper_config_type}")
++				if (${flag_var} MATCHES "/MD")
++					string (REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
++				endif (${flag_var} MATCHES "/MD")
++			endforeach (config_type ${CMAKE_CONFIGURATION_TYPES} ${CMAKE_BUILD_TYPE})
++
++			# clean up
++			set (upper_config_type)
++			set (config_type)
++			set (flag_var)
++		endif (MSVC_STATIC_RUNTIME)
++	endif (MSVC)
+ else (WIN32)
+ 	set (BINDIR bin)
+ 	set (SBINDIR sbin)
+@@ -42,7 +60,7 @@ else (WIN32)
  	else ("${CMAKE_INSTALL_PREFIX}" STREQUAL /usr)
  		set (SYSCONFDIR etc/mosquitto)
  	endif ("${CMAKE_INSTALL_PREFIX}" STREQUAL /usr)
@@ -24,7 +48,7 @@ index 3a68061..52adea0 100644
  	set (LIBDIR lib${LIB_SUFFIX})
  	set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIBDIR}")
  	set (INCLUDEDIR include)
-@@ -78,18 +78,18 @@ if (${WITH_SOCKS} STREQUAL ON)
+@@ -78,18 +96,18 @@ if (${WITH_SOCKS} STREQUAL ON)
  endif (${WITH_SOCKS} STREQUAL ON)
  
  option(WITH_SRV "Include SRV lookup support?" ON)
