@@ -40,13 +40,11 @@ int main(int argc, char * argv []) {
     puts("mosquitto_connect");
     if (mosquitto_connect(st_mosquitto, BROKER_HOSTNAME, BROKER_PORT, 60) != MOSQ_ERR_SUCCESS) {
         fprintf(stderr, "Could not connect to MQTT broker\n");
-        return EXIT_FAILURE;
     }
 
     puts("mosquitto_subscribe");
     if (mosquitto_subscribe(st_mosquitto, NULL, "#", 0) != MOSQ_ERR_SUCCESS) {
         fprintf(stderr, "Could not suscribe to MQTT broker\n");
-        return EXIT_FAILURE;
     }
 
     puts("mosquitto_destroy");
