@@ -1,5 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
+#ifdef WIN32
+#    include <winsock2.h>
+#endif
 
 #include "mosquitto.h"
 
@@ -12,6 +15,12 @@ void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_
 
 int main(int argc, char * argv []) {
     struct mosquitto* st_mosquitto = NULL;
+
+    #ifdef WIN32
+        WORD wVersionRequested = MAKEWORD(2, 2);
+        WSADATA wsaData;
+        WSAStartup(wVersionRequested, &wsaData);
+    #endif
 
     puts("mosquitto_lib_init");
     if (mosquitto_lib_init() != MOSQ_ERR_SUCCESS) {
@@ -26,23 +35,25 @@ int main(int argc, char * argv []) {
 
     puts("mosquitto_connect_callback_set");
     mosquitto_connect_callback_set(st_mosquitto, connect_callback);
-	mosquitto_message_callback_set(st_mosquitto, message_callback);
+    mosquitto_message_callback_set(st_mosquitto, message_callback);
 
     puts("mosquitto_connect");
     if (mosquitto_connect(st_mosquitto, BROKER_HOSTNAME, BROKER_PORT, 60) != MOSQ_ERR_SUCCESS) {
         fprintf(stderr, "Could not connect to MQTT broker\n");
+        return EXIT_FAILURE;
     }
 
     puts("mosquitto_subscribe");
     if (mosquitto_subscribe(st_mosquitto, NULL, "#", 0) != MOSQ_ERR_SUCCESS) {
         fprintf(stderr, "Could not suscribe to MQTT broker\n");
+        return EXIT_FAILURE;
     }
 
     puts("mosquitto_destroy");
-	mosquitto_destroy(st_mosquitto);
+    mosquitto_destroy(st_mosquitto);
 
     puts("mosquitto_lib_cleanup");
-	if (mosquitto_lib_cleanup() != MOSQ_ERR_SUCCESS) {
+    if (mosquitto_lib_cleanup() != MOSQ_ERR_SUCCESS) {
         return EXIT_FAILURE;
     }
 
