@@ -14,9 +14,13 @@ def is_linux():
 
 if __name__ == "__main__":
     builder = build_template_default.get_builder()
-    if is_linux():
-        extended_builds = copy.deepcopy(builder)
-        for settings, options, env_vars, build_requires, _ in extended_builds.items:
-            options['mosquitto:with_mosquittopp'] = False
-            builder.add(settings=settings, options=options, env_vars=env_vars, build_requires=build_requires)
+    extended_builds = copy.deepcopy(builder)
+    for settings, options, env_vars, build_requires, _ in extended_builds.items:
+        options['mosquitto:with_mosquittopp'] = False
+        builder.add(settings=settings, options=options, env_vars=env_vars, build_requires=build_requires)
+    extended_builds = copy.deepcopy(builder)
+    for settings, options, env_vars, build_requires, _ in extended_builds.items:
+        options['mosquitto:with_mosquittopp'] = False
+        options['mosquitto:with_binaries'] = False
+        builder.add(settings=settings, options=options, env_vars=env_vars, build_requires=build_requires)
     builder.run()
