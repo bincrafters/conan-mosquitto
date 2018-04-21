@@ -64,19 +64,19 @@ class MosquittoConan(ConanFile):
             cmake.definitions['CMAKE_POSITION_INDEPENDENT_CODE'] = self.options.fPIC
         else:
             cmake.definitions["WITH_THREADING"] = False
-            cmake.definitions["MSVC_STATIC_RUNTIME"] = "MT" in self.settings.compiler.runtime
         cmake.configure(build_folder=self.build_subfolder)
         return cmake
 
     def build(self):
         cmake = self.configure_cmake()
         cmake.build()
-        cmake.install()
 
     def package(self):
         self.copy(pattern="LICENSE.txt", dst="licenses", src=self.source_subfolder)
         self.copy(pattern="edl-v10", dst="licenses", src=self.source_subfolder)
         self.copy(pattern="epl-v10", dst="licenses", src=self.source_subfolder)
+        cmake = self.configure_cmake()
+        cmake.install()
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
