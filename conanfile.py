@@ -60,9 +60,7 @@ class MosquittoConan(ConanFile):
         cmake.definitions["WITH_SRV"] = self.options.with_srv
         cmake.definitions["WITH_BINARIES"] = self.options.with_binaries
         cmake.definitions["WITH_MOSQUITTOPP"] = self.options.with_mosquittopp
-        if self.settings.os != "Windows":
-            cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = self.options.fPIC
-        else:
+        if self.settings.os == "Windows":
             cmake.definitions["CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS"] = self.options.shared
             cmake.definitions["WITH_THREADING"] = False
         cmake.configure(build_folder=self.build_subfolder)
