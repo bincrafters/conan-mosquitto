@@ -77,6 +77,16 @@ class MosquittoConan(ConanFile):
         cmake = self.configure_cmake()
         cmake.install()
 
+    def deploy(self):
+        self.copy("*", src="bin", dst="bin")
+        self.copy("*.dll", src="lib", dst="bin")
+        self.copy("*.dylib*", src="lib", dst="bin")
+        self.copy_deps("*.dylib*", src="lib", dst="bin")
+        self.copy_deps("*.dll", src="lib", dst="bin")
+        self.copy("*.so*", src="lib", dst="bin")
+        self.copy_deps("*.so*", src="lib", dst="bin")
+        self.copy("mosquitto.conf", src="etc/mosquitto/", dst="bin")
+
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
         if self.settings.os == "Windows":
