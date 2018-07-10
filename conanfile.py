@@ -74,7 +74,7 @@ class MosquittoConan(ConanFile):
         self.copy(pattern="LICENSE.txt", dst="licenses", src=self.source_subfolder)
         self.copy(pattern="edl-v10", dst="licenses", src=self.source_subfolder)
         self.copy(pattern="epl-v10", dst="licenses", src=self.source_subfolder)
-        self.copy(pattern="*mosquitto.conf", dst="bin", src=self.source_subfolder)
+        self.copy(pattern="mosquitto.conf", src=self.source_subfolder, dst="bin")
         cmake = self.configure_cmake()
         cmake.install()
 
