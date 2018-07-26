@@ -1,3 +1,19 @@
+diff --git a/client/CMakeLists.txt b/client/CMakeLists.txt
+index 0b6f420..41d00f3 100644
+--- a/client/CMakeLists.txt
++++ b/client/CMakeLists.txt
+@@ -11,8 +11,9 @@ endif (${WITH_SRV} STREQUAL ON)
+ add_executable(mosquitto_pub pub_client.c ${shared_src})
+ add_executable(mosquitto_sub sub_client.c ${shared_src})
+
+-target_link_libraries(mosquitto_pub libmosquitto)
+-target_link_libraries(mosquitto_sub libmosquitto)
++find_package(Threads)
++target_link_libraries(mosquitto_pub libmosquitto ${CMAKE_THREAD_LIBS_INIT})
++target_link_libraries(mosquitto_sub libmosquitto ${CMAKE_THREAD_LIBS_INIT})
+
+ install(TARGETS mosquitto_pub RUNTIME DESTINATION "${BINDIR}" LIBRARY DESTINATION "${LIBDIR}")
+ install(TARGETS mosquitto_sub RUNTIME DESTINATION "${BINDIR}" LIBRARY DESTINATION "${LIBDIR}")
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 3a68061..8ac5476 100644
 --- a/CMakeLists.txt
