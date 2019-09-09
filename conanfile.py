@@ -25,11 +25,9 @@ class MosquittoConan(ConanFile):
         "with_srv": [True, False],
         "with_binaries": [True, False]
     }
-    default_options = ("shared=False", "fPIC=True", "with_tls=True",
-                       "with_mosquittopp=True", "with_srv=True",
-                       "with_binaries=True")
-    source_subfolder = "source_subfolder"
-    build_subfolder = "build_subfolder"
+    default_options = {'shared': False, 'fPIC': True, 'with_tls': True, 'with_mosquittopp': True, 'with_srv': True, 'with_binaries': True}
+    _source_subfolder = "source_subfolder"
+    _build_subfolder = "build_subfolder"
 
     def config_options(self):
         if self.settings.os == 'Windows':
@@ -43,7 +41,7 @@ class MosquittoConan(ConanFile):
 
     def requirements(self):
         if self.options.with_tls:
-            self.requires.add("OpenSSL/1.0.2o@conan/stable")
+            self.requires.add("OpenSSL/1.0.2s@conan/stable")
         if self.options.with_srv:
             self.requires.add("c-ares/1.14.0@conan/stable")
 
@@ -51,11 +49,11 @@ class MosquittoConan(ConanFile):
         source_url = "https://github.com/eclipse/mosquitto"
         tools.get("{0}/archive/v{1}.tar.gz".format(source_url, self.version))
         extracted_dir = self.name + "-" + self.version
-        os.rename(extracted_dir, self.source_subfolder)
+        os.rename(extracted_dir, self._source_subfolder)
         tools.patch(
-            patch_file="mosquitto.patch", base_path=self.source_subfolder)
+            patch_file="mosquitto.patch", base_path=self._source_subfolder)
 
-    def configure_cmake(self):
+    def _configure_cmake(self):
         cmake = CMake(self)
         cmake.definitions["WITH_SRV"] = self.options.with_srv
         cmake.definitions["WITH_BINARIES"] = self.options.with_binaries
@@ -63,19 +61,19 @@ class MosquittoConan(ConanFile):
         if self.settings.os == "Windows":
             cmake.definitions["CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS"] = self.options.shared
             cmake.definitions["WITH_THREADING"] = False
-        cmake.configure(build_folder=self.build_subfolder)
+        cmake.configure(build_folder=self._build_subfolder)
         return cmake
 
     def build(self):
-        cmake = self.configure_cmake()
+        cmake = self._configure_cmake()
         cmake.build()
 
     def package(self):
-        self.copy(pattern="LICENSE.txt", dst="licenses", src=self.source_subfolder)
-        self.copy(pattern="edl-v10", dst="licenses", src=self.source_subfolder)
-        self.copy(pattern="epl-v10", dst="licenses", src=self.source_subfolder)
-        self.copy(pattern="mosquitto.conf", src=self.source_subfolder, dst="bin")
-        cmake = self.configure_cmake()
+        self.copy(pattern="LICENSE.txt", dst="licenses", src=self._source_subfolder)
+        self.copy(pattern="edl-v10", dst="licenses", src=self._source_subfolder)
+        self.copy(pattern="epl-v10", dst="licenses", src=self._source_subfolder)
+        self.copy(pattern="mosquitto.conf", src=self._source_subfolder, dst="bin")
+        cmake = self._configure_cmake()
         cmake.install()
 
     def deploy(self):
