@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from conans import ConanFile, CMake, tools
 import os
 
@@ -38,12 +35,13 @@ class MosquittoConan(ConanFile):
     def configure(self):
         if not self.options.with_mosquittopp:
             del self.settings.compiler.libcxx
+            del self.settings.compiler.cppstd
 
     def requirements(self):
         if self.options.with_tls:
-            self.requires.add("OpenSSL/1.0.2s@conan/stable")
+            self.requires.add("openssl/1.0.2t")
         if self.options.with_srv:
-            self.requires.add("c-ares/1.14.0@conan/stable")
+            self.requires.add("c-ares/1.15.0")
 
     def source(self):
         source_url = "https://github.com/eclipse/mosquitto"
