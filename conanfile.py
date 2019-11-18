@@ -8,7 +8,6 @@ class MosquittoConan(ConanFile):
     description = "Open source message broker that implements the MQTT protocol"
     url = "https://github.com/bincrafters/conan-mosquitto"
     homepage = "https://mosquitto.org/"
-    author = "Bincrafters <bincrafters@gmail.com>"
     license = "EPL", "EDL"
     exports = ["LICENSE.md"]
     exports_sources = ["CMakeLists.txt", "mosquitto.patch"]
