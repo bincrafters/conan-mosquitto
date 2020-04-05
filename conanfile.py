@@ -9,7 +9,6 @@ class MosquittoConan(ConanFile):
     url = "https://github.com/bincrafters/conan-mosquitto"
     homepage = "https://mosquitto.org/"
     license = "EPL", "EDL"
-    exports = ["LICENSE.md"]
     exports_sources = ["CMakeLists.txt", "mosquitto.patch"]
     generators = "cmake"
     settings = "os", "arch", "compiler", "build_type"
