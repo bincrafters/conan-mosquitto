@@ -51,6 +51,7 @@ class MosquittoConan(ConanFile):
 
     def _configure_cmake(self):
         cmake = CMake(self)
+        cmake.definitions["WITH_TLS"] = self.options.with_tls
         cmake.definitions["WITH_SRV"] = self.options.with_srv
         cmake.definitions["WITH_BINARIES"] = self.options.with_binaries
         cmake.definitions["WITH_MOSQUITTOPP"] = self.options.with_mosquittopp
