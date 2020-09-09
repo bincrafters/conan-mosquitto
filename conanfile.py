@@ -37,9 +37,9 @@ class MosquittoConan(ConanFile):
 
     def requirements(self):
         if self.options.with_tls:
-            self.requires.add("openssl/1.0.2u")
+            self.requires("openssl/1.0.2u")
         if self.options.with_srv:
-            self.requires.add("c-ares/1.15.0")
+            self.requires("c-ares/1.15.0")
 
     def source(self):
         source_url = "https://github.com/eclipse/mosquitto"
